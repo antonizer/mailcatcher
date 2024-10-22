@@ -174,3 +174,34 @@ Copyright © 2010-2019 Samuel Cochran (sj26@sj26.com). Released under the MIT Li
   [mailcatcher-github]: https://github.com/sj26/mailcatcher
   [mailcatcher-issues]: https://github.com/sj26/mailcatcher/issues
   [websockets]: https://tools.ietf.org/html/rfc6455
+
+
+## Proxy
+
+```
+gem install rack-reverse-proxy
+```
+
+config.ru
+
+```
+require 'rack'
+require 'rack/reverse_proxy'
+
+INDEXES = ['index.html','index.php', 'index.cgi']
+
+ENV['SERVER_PROTOCOL'] = "HTTP/1.1"
+
+use Rack::ReverseProxy do
+   # Set :preserve_host to true globally (default is true already)
+   reverse_proxy_options :preserve_host => true
+
+   # Forward the path /* to tomcat. 
+   # You can limit this to requests to certain paths by providing a more specific 
+   # path as the first argument
+   reverse_proxy '/', 'http://127.0.0.1:1080'
+end
+
+use Rack::ReverseProxy
+run Rack::File.new Dir.getwd
+```
